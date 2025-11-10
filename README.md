@@ -9,11 +9,13 @@
 ### Konfiguracja: 
 Wejść w katalog projekt02 i uruchomić komendę: 
 ```sh 
-npm install```
+npm install
+```
 
 ### Uruchomienie:
 W katalogu projekt02:
 ```sh 
-node index.js```
+node index.js
+```
 
 Projekt zostanie uruchomiony na [tym adresie (https://localhost:8000)](http://localhost:8000)
