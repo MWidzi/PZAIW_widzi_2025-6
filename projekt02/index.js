@@ -58,5 +58,5 @@ app.post("/cards/:category_id/new", (req, res) => {
 
 
 app.listen(port, () => {
-    console.log('Server listening on http://localhost:${port}');
+    console.log(`Server listening on http://localhost:${port}`);
 });
