@@ -1,5 +1,5 @@
 # PZAIW_widzi_2025-6
-## Repozytorium do programowania zaawansowanych aplikacji webowych w roku szkolnym 2025/6
+Repozytorium do programowania zaawansowanych aplikacji webowych w roku szkolnym 2025/6
 
 ### Legenda folderów:
 - projekt na 13-10-2025: first-server
@@ -18,4 +18,4 @@ W katalogu projekt02:
 node index.js
 ```
 
-Projekt zostanie uruchomiony na [tym adresie (https://localhost:8000)](http://localhost:8000)
+Projekt zostanie uruchomiony na [tym adresie](http://localhost:8000)
