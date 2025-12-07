@@ -35,3 +35,31 @@ input[type="submit"] {
     border: 0px;
     cursor: pointer;
 }
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: separate; /* Allows border-radius on tr and border-spacing */
+    border-spacing: 0 8px; /* Vertical spacing between rows */
+}
+
+table th,
+table td {
+    border: none; /* No internal cell borders */
+    padding: 10px; /* Consistent padding for content */
+    text-align: left;
+}
+
+/* Rounded corners for table rows */
+.tr_fc,
+.tr_ap {
+    border-radius: 12px; /* Apply rounded corners */
+}
+
+.tr_fc {
+    background-color: #923852;
+}
+
+.tr_ap {
+    background-color: #1184a3;
+}

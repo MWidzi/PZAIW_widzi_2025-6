@@ -7,6 +7,11 @@ const { default: data } = await import("./songs.json", {
     },
 });
 
+const { default: maxDiffs } = await import("./max_diffs.json", {
+    with: {
+        type: "json",
+    },
+});
 
 export function getData() {
     return data;
@@ -25,20 +30,60 @@ export function getOrderedLevelTable() {
     return levelTable.sort((a, b) => b.lvl - a.lvl);
 }
 
-// only setters because the table gets pushed to EJS so it's easier to edit
+export function calcSongRating(game, lvl) {
+    const maxLevel = maxDiffs[game];
+
+    if (maxLevel === undefined) {
+        console.warn(`Unknown game: ${game}. Returning original level.`);
+        return lvl;
+    }
+
+    if (maxLevel === 0) {
+        console.warn(`Max level for game ${game} is 0. Returning 0.`);
+        return 0;
+    }
+
+    return (lvl / maxLevel) * 10.0;
+}
+
+// only full table setters because the table gets pushed to EJS so it dosen't get lost and it's easier to edit this way
 export function setAPs(tab) {
-    APs = tab;
+    APs = Array.isArray(tab) ? tab : (tab ? [tab] : []);
     console.table(APs)
 }
 
 export function setFCs(tab) {
-    FCs = tab;
+    FCs = Array.isArray(tab) ? tab : (tab ? [tab] : []);
     console.table(FCs)
+}
+
+export function getAPs() {
+    return APs;
+}
+
+export function getFCs() {
+    return FCs;
+}
+
+export function validateAndSetWeighedTabs(apIds, fcIds, len) {
+    fcIds = fcIds.filter(id => !apIds.includes(String(id)));
+
+    if (apIds.some(id => id > len) || fcIds.some(id => id > len)) {
+        return false;
+    }
+
+    setAPs(apIds);
+    setFCs(fcIds);
+    return true;
 }
 
 export default {
     getData,
     getOrderedLevelTable,
     setAPs,
-    setFCs
+    setFCs,
+    getAPs,
+    getFCs,
+    calcSongRating,
+    validateAndSetWeighedTabs
 }

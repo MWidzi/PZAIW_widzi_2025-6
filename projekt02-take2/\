@@ -1,0 +1,36 @@
+<%- include("header.ejs") %>
+    <h1>
+        <%= rating %>
+    </h1>
+    <table>
+        <% counter=0 %>
+            <thead>
+                <tr>
+                    <th>game</th>
+                    <th>name</th>
+                    <th>level</th>
+                    <th>difficulty</th>
+                </tr>
+            </thead>
+            <% data.forEach(function(song) { var fc=fcTab && fcTab.includes(String(counter)); var ap=apTab &&
+                apTab.includes(String(counter)); %>
+                <% if() { %>
+                    <tr>
+                        <td>
+                            <%= song.game %>
+                        </td>
+                        <td>
+                            <%= song.name %>
+                        </td>
+                        <td>
+                            <%= song.lvl %>
+                        </td>
+                        <td>
+                            <%= song.difficulty %>
+                        </td>
+                    </tr>
+                    <% counter++ %>
+                        <% }})%>
+    </table>
+
+    <%- include("footer.ejs") %>

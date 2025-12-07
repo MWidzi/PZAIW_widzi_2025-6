@@ -1,59 +1,45 @@
-<html lang="en">
+<%- include("header.ejs") %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <%= title %>
-    </title>
-    <link rel="stylesheet" href="/css/style.css" />
-</head>
+    <form method="POST" action="/songs/saveRating">
+        <input type="submit" value="Update rating">
+        <table>
+            <% counter=0 %>
+                <thead>
+                    <tr>
+                        <th>game</th>
+                        <th>name</th>
+                        <th>level</th>
+                        <th>difficulty</th>
+                        <th>FC</th>
+                        <th>AP</th>
+                    </tr>
+                </thead>
+                <% data.forEach(function(song) { %>
+                    <tr>
+                        <td>
+                            <%= song.game %>
+                        </td>
+                        <td>
+                            <%= song.name %>
+                        </td>
+                        <td>
+                            <%= song.lvl %>
+                        </td>
+                        <td>
+                            <%= song.difficulty %>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="songFcIds" value="<%= counter %>" <% if(fcTab &&
+                                fcTab.includes(String(counter))) { %>checked<% } %>>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="songApIds" value="<%= counter %>" <% if(apTab &&
+                                apTab.includes(String(counter))) { %>checked<% } %>>
+                        </td>
+                    </tr>
+                    <% counter++ %>
+                        <% })%>
+        </table>
+    </form>
 
-<body>
-    <main>
-        <h1>
-            <%= title %>
-        </h1>
-        <form method="POST" action="/songs/saveRating">
-            <input type="submit" value="Update rating">
-            <table>
-                <% counter=0 %>
-                    <thead>
-                        <tr>
-                            <th>game</th>
-                            <th>name</th>
-                            <th>level</th>
-                            <th>difficulty</th>
-                            <th>FC</th>
-                            <th>AP</th>
-                        </tr>
-                    </thead>
-                    <% data.forEach(function(song) { %>
-                        <tr>
-                            <td>
-                                <%= song.game %>
-                            </td>
-                            <td>
-                                <%= song.name %>
-                            </td>
-                            <td>
-                                <%= song.lvl %>
-                            </td>
-                            <td>
-                                <%= song.difficulty %>
-                            </td>
-                            <td>
-                                <input type="checkbox" name="songFcIds" value="<%= counter %>">
-                            </td>
-                            <td>
-                                <input type="checkbox" name="songApIds" value="<%= counter %>">
-                            </td>
-                        </tr>
-                        <% counter++ %>
-                            <% })%>
-            </table>
-        </form>
-    </main>
-</body>
-
-</html>
+    <%- include("footer.ejs") %>

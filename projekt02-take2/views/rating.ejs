@@ -1,0 +1,42 @@
+<%- include("header.ejs") %>
+    <h1>
+        <%= rating %>
+    </h1>
+    <% if (rating===0) { %>
+        <p>No songs added, go <a href="/songs"><b>here</b></a> to add songs</p>
+        <% } else { %>
+            <a href="/songs"><b>edit songs</b></a><br><br><br><br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>game</th>
+                        <th>name</th>
+                        <th>level</th>
+                        <th>rating</th>
+                        <th>difficulty</th>
+                    </tr>
+                </thead>
+                <% data.forEach(function(song, index) { var fc=fcTab && fcTab.includes(String(index)); var ap=apTab &&
+                    apTab.includes(String(index)); if (fc || ap) { %>
+                    <tr class="<%= fc ? 'tr_fc' : 'tr_ap' %>">
+                        <td>
+                            <%= song.game %>
+                        </td>
+                        <td>
+                            <%= song.name %>
+                        </td>
+                        <td>
+                            <%= song.lvl %>
+                        </td>
+                        <td>
+                            <%= calcSongRating(song.game, fc ? song.lvl - 1 : song.lvl).toFixed(2) %>
+                        </td>
+                        <td>
+                            <%= song.difficulty %>
+                        </td>
+                    </tr>
+                    <% }})%>
+            </table>
+            <% } %>
+
+                <%- include("footer.ejs") %>
