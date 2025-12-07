@@ -1,0 +1,75 @@
+[
+    {
+        "game": "pjsk",
+        "ID": 1,
+        "name": "Tell Your World",
+        "group": "VS",
+        "duration": 123,
+        "BPM": [
+            150
+        ],
+        "lvlTab": [
+            5,
+            10,
+            16,
+            22,
+            26,
+            25
+        ],
+        "lvlDiffs": [
+            "easy",
+            "normal",
+            "hard",
+            "expert",
+            "master",
+            "append"
+        ]
+    },
+    {
+        "game": "pjsk",
+        "ID": 1,
+        "name": "drop pop candy",
+        "group": "VBS",
+        "duration": 105,
+        "BPM": [
+            130
+        ],
+        "lvlTab": [
+            6,
+            12,
+            17,
+            25,
+            29
+        ],
+        "lvlDiffs": [
+            "easy",
+            "normal",
+            "hard",
+            "expert",
+            "master"
+        ]
+    },
+    {
+        "game": "wds",
+        "name": "I Wanna",
+        "group": "sirius",
+        "duration": 155,
+        "BPM": [
+            200
+        ],
+        "lvlTab": [
+            13,
+            19,
+            27,
+            30,
+            40
+        ],
+        "lvlDiffs": [
+            "normal",
+            "hard",
+            "extra",
+            "stella",
+            "olivier"
+        ]
+    }
+]
