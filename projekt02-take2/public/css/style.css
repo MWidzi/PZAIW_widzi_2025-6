@@ -23,5 +23,15 @@ a {
     background-color: #1184a3;
     color: #131229;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 0.5rem;
+}
+
+input[type="submit"] {
+    background-color: #1184a3;
+    color: #131229;
+    padding: 10px 30px;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    border: 0px;
+    cursor: pointer;
 }

@@ -11,8 +11,15 @@ app.use(express.urlencoded());
 app.get("/songs", (req, res) => {
     res.render("songs", {
         title: "Add Songs",
-        data: songs.getData(),
+        data: songs.getOrderedLevelTable(),
     });
+});
+
+app.post("/songs/saveRating", (req, res) => {
+    songs.setAPs(req.body.songApIds);
+    songs.setFCs(req.body.songApIds);
+    res.redirect(`/songs`);
+
 });
 
 app.listen(port, () => {
