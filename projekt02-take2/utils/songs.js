@@ -49,12 +49,10 @@ export function calcSongRating(game, lvl) {
 // only full table setters because the table gets pushed to EJS so it dosen't get lost and it's easier to edit this way
 export function setAPs(tab) {
     APs = Array.isArray(tab) ? tab : (tab ? [tab] : []);
-    console.table(APs)
 }
 
 export function setFCs(tab) {
     FCs = Array.isArray(tab) ? tab : (tab ? [tab] : []);
-    console.table(FCs)
 }
 
 export function getAPs() {
