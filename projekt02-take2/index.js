@@ -11,6 +11,25 @@ app.use(express.urlencoded({ extended: true }));
 
 var songsData = songs.getOrderedLevelTable();
 
+function validateData(req, res) {
+    let apIds = req.body.songApIds;
+    let fcIds = req.body.songFcIds;
+
+    let errors = songs.validateAndSetWeighedTabs(apIds, fcIds, songsData.length);
+
+    return errors;
+
+}
+
+function returnValidated(errors, ifFunct, elseFunct) {
+    if (errors.length == 0) {
+        ifFunct();
+    } else {
+        elseFunct();
+    }
+}
+
+
 app.get("/rating", (req, res) => {
     let rating = 0;
     let fcTab = songs.getFCs();
@@ -47,14 +66,19 @@ app.get("/songs", (req, res) => {
 });
 
 app.post("/songs/saveRating", (req, res) => {
-    let apIds = req.body.songApIds;
-    let fcIds = req.body.songFcIds;
-
-    songs.validateAndSetWeighedTabs(apIds, fcIds, songsData.length);
-
-    // TODO: Add error handling, validation in the rest of the paths, fallback 404 for not found path
-
-    res.redirect(`/rating`);
+    let errors = validateData(req, res);
+    returnValidated(errors, function() {
+        res.redirect(`/rating`);
+    }, function() {
+        res.render("song_select_error", {
+            errors: errors,
+            title: "Add Songs",
+            data: songsData,
+            apTab: songs.getAPs(),
+            fcTab: songs.getFCs(),
+            utils: utils
+        });
+    })
 });
 
 app.listen(port, () => {

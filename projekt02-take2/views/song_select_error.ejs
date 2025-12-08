@@ -1,0 +1,13 @@
+<%- include("header.ejs") %>
+
+    <ul id="errors">
+        <% errors.forEach(function(error) { %>
+            <li>
+                <%= error %>
+            </li>
+            <% }) %>
+    </ul>
+
+    <%- include("song_form.ejs") %>
+
+        <%- include("footer.ejs") %>

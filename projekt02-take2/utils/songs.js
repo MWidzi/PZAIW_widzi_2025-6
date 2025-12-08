@@ -66,15 +66,24 @@ export function getFCs() {
 }
 
 export function validateAndSetWeighedTabs(apIds, fcIds, len) {
+    let errors = [];
+
+    apIds = Array.isArray(apIds) ? apIds : (apIds ? [apIds] : []);
+    fcIds = Array.isArray(fcIds) ? fcIds : (fcIds ? [fcIds] : []);
+
     fcIds = fcIds.filter(id => !apIds.includes(String(id)));
 
     if (apIds.some(id => id > len) || fcIds.some(id => id > len)) {
-        return false;
+
+        errors.push("Checkbox ID outside of bounds");
     }
 
-    setAPs(apIds);
-    setFCs(fcIds);
-    return true;
+    if (errors.length == 0) {
+        setAPs(apIds);
+        setFCs(fcIds);
+    }
+
+    return errors;
 }
 
 export default {
