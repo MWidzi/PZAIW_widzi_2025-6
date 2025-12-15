@@ -5,7 +5,7 @@
     <% if (rating===0) { %>
         <p>No songs added, go <a href="/songs"><b>here</b></a> to add songs</p>
         <% } else { %>
-            <a href="/songs"><b>edit songs</b></a><br><br><br><br>
+            <a href="/songs"><b>Edit Scores</b></a><br><br><br><br>
             <table>
                 <thead>
                     <tr>
@@ -16,8 +16,8 @@
                         <th>difficulty</th>
                     </tr>
                 </thead>
-                <% data.forEach(function(song, index) { var fc=fcTab && fcTab.includes(String(index)); var ap=apTab &&
-                    apTab.includes(String(index)); if (fc || ap) { %>
+                <% data.forEach(function(song) { var fc=fcTab && fcTab.includes(song.sd_id); var ap=apTab &&
+                    apTab.includes(song.sd_id); if (fc || ap) { %>
                     <tr class="<%= fc ? 'tr_fc' : 'tr_ap' %>">
                         <td>
                             <%= song.game %>
