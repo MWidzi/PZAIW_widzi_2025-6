@@ -31,7 +31,8 @@ db.exec(`
 
     CREATE TABLE IF NOT EXISTS games (
         "game_id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-        "name"	TEXT NOT NULL
+        "name"	TEXT NOT NULL,
+        "name_short"  TEXT NOT NULL
     ) STRICT;
 `);
 
@@ -50,6 +51,7 @@ const db_ops = {
         SELECT
             s.game as game,
             s.name as name,
+            s.key as key,
             sd.difficulty AS difficulty,
             sd.level AS lvl,
             sd.sd_id AS sd_id,
@@ -67,6 +69,7 @@ const db_ops = {
     update_score_type: db.prepare(`UPDATE scores SET type = ? WHERE sd_id = ?`),
     get_game_min_max_diff: db.prepare(`SELECT max(song_difficulty.level) AS 'max', min(song_difficulty.level) AS 'min' FROM songs JOIN song_difficulty ON song_difficulty.song_id = songs.song_id WHERE songs.game = ?`),
     select_song_by_key: db.prepare(`SELECT * FROM songs WHERE songs.key LIKE ?`),
+
 };
 
 // AP - All Perfect (trafienie wszystkich nutek w ramach najwyższego timing judgementu)
@@ -166,11 +169,39 @@ export function validateAndSetWeighedTabs(apIds, fcIds) {
 
 // TODO: Dodać walidację nazwy piosenki oraz czy link do jacketa zwraca 404 czy nie
 
+export function getSongDetailsWithDifficulties(songKey) {
+    const allSongsWithDifficulties = getOrderedLevelTable();
+    const filteredDifficulties = allSongsWithDifficulties.filter(song => song.key === songKey);
+
+    if (filteredDifficulties.length === 0) {
+        return null; // Song not found
+    }
+
+    const song = {
+        game: filteredDifficulties[0].game,
+        key: filteredDifficulties[0].key,
+        name: filteredDifficulties[0].name,
+        jacket: filteredDifficulties[0].jacket,
+        difficulties: []
+    };
+
+    filteredDifficulties.forEach(entry => {
+        song.difficulties.push({
+            name: entry.difficulty,
+            level: entry.lvl,
+            sd_id: entry.sd_id
+        });
+    });
+
+    return song;
+}
+
 export default {
     getOrderedLevelTable,
     getAPs,
     getFCs,
     calcSongRating,
     validateAndSetWeighedTabs,
-    getGamesTable
+    getGamesTable,
+    getSongDetailsWithDifficulties
 }

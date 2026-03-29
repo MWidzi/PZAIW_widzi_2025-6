@@ -38,7 +38,7 @@ app.get("/rating", (req, res) => {
     });
 });
 
-// TODO: add individual song view
+// TODO: rename this to diffs
 app.get("/songs", (req, res) => {
     res.render("songs", {
         title: "Your scores",
@@ -48,6 +48,21 @@ app.get("/songs", (req, res) => {
         fcTab: songs.getFCs(),
         utils: utils
     });
+});
+
+app.get("/songs/:key", (req, res) => {
+    const songKey = req.params.key;
+    const song = songs.getSongDetailsWithDifficulties(songKey);
+
+    if (!song) {
+        return res.sendStatus(404);
+    }
+
+    res.render("song_info", {
+        title: "Song info",
+        song: song,
+        games: games
+    })
 });
 
 app.get("/songs/song_new", (req, res) => {

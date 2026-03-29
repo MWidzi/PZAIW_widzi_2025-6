@@ -49,6 +49,35 @@ table td {
     text-align: left;
 }
 
+#song_display_tab > tbody > tr > td {
+    border: 2px solid #923852;
+    border-radius: 0.25rem;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#song_display_tab > tr > td > table {
+    border: 2px solid #923852;
+    border-radius: 0.25rem;
+    width: 100%; /* Ensure the nested table takes full width of its parent td */
+    border-collapse: separate; /* Maintain separate borders for cells if needed later */
+    border-spacing: 0; /* Remove default spacing for a clean border around the table */
+}
+
+#song_display_tab > tbody > tr > td > table tr td {
+    text-align: center;
+}
+
+#song_display_tab > tbody > tr > td h2 {
+    text-align: center;
+    margin: 0;
+    line-height: 1;
+    padding: 5px 0;
+}
+
 .tr_fc,
 .tr_ap {
     border-radius: 12px;
@@ -74,4 +103,12 @@ ul {
 #new_song_table {
     width: 400px;
     margin: 0 auto;
+}
+
+#song_display_tab {
+    border: 3px solid #1184a3;
+    border-radius: 0.5rem;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 10px;
 }

@@ -1,1 +1,20 @@
-<img src="" alt="">
+<table id='song_display_tab'>
+    <tr>
+        <td><img src="<%= song.jacket %>" alt="<%= song.name %> jacket"></td>
+    </tr>
+    <tr>
+        <td><h2><%= song.name %></h2></td>
+    </tr>
+    <tr>
+        <td><h2><%= games[song.game - 1].name %></h2></td>
+    </tr>
+    <tr>
+        <td>
+            <table>
+                <% song.difficulties.forEach((diff) => { %>
+                <tr><td><%= diff.name %>: <%= diff.level %></td></tr>
+                <% }) %>
+            </table>
+        </td>
+    </tr>
+</table>
