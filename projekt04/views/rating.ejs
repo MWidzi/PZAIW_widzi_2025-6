@@ -9,6 +9,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th>jacket</th>
                         <th>game</th>
                         <th>name</th>
                         <th>level</th>
@@ -19,9 +20,13 @@
                 <% data.forEach(function(song) { var fc=fcTab && fcTab.includes(song.sd_id); var ap=apTab &&
                     apTab.includes(song.sd_id); if (fc || ap) { %>
                     <tr class="<%= fc ? 'tr_fc' : 'tr_ap' %>">
-                        <td>
-                            <%= song.game %>
-                        </td>
+                    <td>
+                        <img class="smallImg" src="<%= song.jacket %>" alt="<%= song.name + " jacket" %>"
+                        referrerpolicy="no-referrer">
+                    </td>
+                    <td>
+                        <%= games[song.game - 1].name %>
+                    </td>
                         <td>
                             <%= song.name %>
                         </td>

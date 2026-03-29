@@ -1,0 +1,30 @@
+<form method="POST" action="/songs/song_new" id="new_song_form">
+    <table id="new_song_table">
+        <tr>
+            <td><label for="name">Song name: </label></td>
+            <td><input type="text" name="name"><br></td>
+        </tr>
+        <tr>
+            <td><label for="jacket">Song jacket: </label></td>
+            <td><input type="text" name="jacket"><br></td>
+        </tr>
+        <tr>
+            <td><label for="game">Game: </label></td>
+            <td>
+                <select name="game" id="game_select">
+                    <% games.forEach((game)=> { %>
+                        <option value="<%= game.name %>">
+                            <%= game.name %>
+                        </option>
+                        <% }) %>
+                </select><br>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="jacket">Jacket link: </label></td>
+            <td><input type="text" name="jacket"><br></td>
+        </tr>
+    </table>
+    <br>
+    <input type="submit" value="Update rating"><br>
+</form>

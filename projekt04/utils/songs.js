@@ -7,16 +7,19 @@ console.log("Creating tables");
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS songs (
-        song_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        game TEXT NOT NULL DEFAULT 'pjsk',
-        name TEXT NOT NULL,
-        jacket TEXT
+        "song_id"	INTEGER,
+        "game"	INTEGER NOT NULL,
+        "key"	TEXT NOT NULL UNIQUE,
+        "name"	TEXT NOT NULL,
+        "jacket"	TEXT,
+        PRIMARY KEY("song_id" AUTOINCREMENT),
+        FOREIGN KEY("game") REFERENCES "games"("game_id") ON DELETE CASCADE
     ) STRICT;
 
     CREATE TABLE IF NOT EXISTS song_difficulty (
         sd_id INTEGER PRIMARY KEY AUTOINCREMENT,
         song_id INTEGER NOT NULL REFERENCES songs(song_id) ON DELETE NO ACTION,
-        difficullty TEXT NOT NULL,
+        difficulty TEXT NOT NULL,
         level INTEGER NOT NULL
     ) STRICT;
 
@@ -26,12 +29,9 @@ db.exec(`
         type TEXT NOT NULL
     ) STRICT;
 
-    CREATE TABLE IF NOT EXISTS "songs" (
-        "song_id"	INTEGER,
-        "game"	TEXT NOT NULL DEFAULT 'pjsk',
-        "name"	TEXT NOT NULL,
-        "jacket"	TEXT,
-        PRIMARY KEY("song_id" AUTOINCREMENT)
+    CREATE TABLE IF NOT EXISTS games (
+        "game_id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+        "name"	TEXT NOT NULL
     ) STRICT;
 `);
 
@@ -39,8 +39,8 @@ const db_ops = {
     insert_songs: db.prepare(`INSERT INTO songs (game, name)
         VALUES (?, ?) RETURNING song_id, game, name, jacket;`
     ),
-    insert_song_difficulty: db.prepare(`INSERT INTO song_difficulty (song_id, difficullty, level)
-        VALUES (?, ?, ?) RETURNING sd_id, song_id, difficullty, level;`
+    insert_song_difficulty: db.prepare(`INSERT INTO song_difficulty (song_id, difficulty, level)
+        VALUES (?, ?, ?) RETURNING sd_id, song_id, difficulty, level;`
     ),
     insert_scores: db.prepare(`INSERT INTO scores (sd_id, type)
         VALUES (?, ?) RETURNING score_id, sd_id, type;`
@@ -50,7 +50,7 @@ const db_ops = {
         SELECT
             s.game as game,
             s.name as name,
-            sd.difficullty AS difficulty,
+            sd.difficulty AS difficulty,
             sd.level AS lvl,
             sd.sd_id AS sd_id,
             s.jacket as jacket
@@ -61,15 +61,18 @@ const db_ops = {
         ORDER BY
             lvl DESC
     `),
+    select_games_table: db.prepare(`SELECT name FROM games`),
     add_scores: db.prepare(`INSERT INTO scores (sd_id, type) VALUES (?, ?) RETURNING score_id, sd_id, type`),
     delete_scores: db.prepare(`DELETE FROM scores WHERE sd_id = ?`),
     update_score_type: db.prepare(`UPDATE scores SET type = ? WHERE sd_id = ?`),
-    get_game_min_max_diff: db.prepare(`SELECT max(song_difficulty.level) AS 'max', min(song_difficulty.level) AS 'min' FROM songs JOIN song_difficulty ON song_difficulty.song_id = songs.song_id WHERE songS.game LIKE ?`),
+    get_game_min_max_diff: db.prepare(`SELECT max(song_difficulty.level) AS 'max', min(song_difficulty.level) AS 'min' FROM songs JOIN song_difficulty ON song_difficulty.song_id = songs.song_id WHERE songs.game = ?`),
+    select_song_by_key: db.prepare(`SELECT * FROM songs WHERE songs.key LIKE ?`),
 };
 
 // AP - All Perfect (trafienie wszystkich nutek w ramach najwyższego timing judgementu)
 // FC - Full Combo (trafienie wszystkich nutek, ale np z lekkim opoznieniem)
 // są to typy wyników końcowych aplikowalne do prawie każdej gry rytmicznej
+
 var APs = db_ops.select_scores_by_type.all("AP");
 var FCs = db_ops.select_scores_by_type.all("FC");
 
@@ -92,7 +95,13 @@ export function getOrderedLevelTable() {
     return query;
 }
 
+export function getGamesTable() {
+    const query = db_ops.select_games_table.all()
+    return query;
+}
+
 export function calcSongRating(game, lvl) {
+    // TODO: naprawic to zeby to nie bylo takie nieefektywne
     const maxLevel = db_ops.get_game_min_max_diff.get(game)['max'];
 
     if (maxLevel === undefined) {
@@ -155,10 +164,13 @@ export function validateAndSetWeighedTabs(apIds, fcIds) {
     FCs = db_ops.select_scores_by_type.all("FC");
 }
 
+// TODO: Dodać walidację nazwy piosenki oraz czy link do jacketa zwraca 404 czy nie
+
 export default {
     getOrderedLevelTable,
     getAPs,
     getFCs,
     calcSongRating,
-    validateAndSetWeighedTabs
+    validateAndSetWeighedTabs,
+    getGamesTable
 }

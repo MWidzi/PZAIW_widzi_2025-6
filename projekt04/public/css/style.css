@@ -62,6 +62,16 @@ table td {
     background-color: #1184a3;
 }
 
+.smallImg {
+    width: 100px;
+    height: 100px;
+}
+
 ul {
     color: #FF0000;
+}
+
+#new_song_table {
+    width: 400px;
+    margin: 0 auto;
 }

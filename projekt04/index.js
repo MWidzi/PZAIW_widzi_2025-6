@@ -11,7 +11,10 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-var songsData = songs.getOrderedLevelTable();
+const songsData = songs.getOrderedLevelTable();
+const games = songs.getGamesTable();
+
+// Notka wstępna: tabela games jest nieedytowalna z poziomu aplikacji 'by design', tworzac analogie do projektu z fiszkami tabela scores to by byly fiszki a tabela songs to kategorie, games istnieje z powodów ideowych projektu. W związku z tym sposoby implementacji różnią się lekko od przykładowego projektu, lecz funkcjonalności zostają takie same. Informacje o terminologii używanej w nazwach zmiennych znajdują się w pliku songs.js
 
 app.get("/rating", (req, res) => {
     let rating = 0;
@@ -28,20 +31,34 @@ app.get("/rating", (req, res) => {
         title: "Your Rating",
         rating: rating,
         data: songsData,
+        games: games,
         apTab: apTab,
         fcTab: fcTab,
         calcSongRating: songs.calcSongRating
     });
 });
 
+// TODO: add individual song view
 app.get("/songs", (req, res) => {
     res.render("songs", {
-        title: "Add Songs",
+        title: "Your scores",
         data: songsData,
+        games: games,
         apTab: songs.getAPs(),
         fcTab: songs.getFCs(),
         utils: utils
     });
+});
+
+app.get("/songs/song_new", (req, res) => {
+    res.render("song_new", {
+        title: "Add song",
+        games: games
+    });
+});
+
+app.post("/songs/song_new", (req, res) => {
+    // TODO: w projekcie przykladowym category id jest dodatkowo zrobione zeby byla przyjazna nazwa w linku, trzeba to dodać do bazy i ogolnie
 });
 
 app.post("/songs/saveRating", (req, res) => {

@@ -3,6 +3,7 @@
     <table>
         <thead>
             <tr>
+                <th>jacket</th>
                 <th>game</th>
                 <th>name</th>
                 <th>level</th>
@@ -14,7 +15,11 @@
         <% data.forEach(function(song) { %>
             <tr>
                 <td>
-                    <%= song.game %>
+                    <img class="smallImg" src="<%= song.jacket %>" alt="<%= song.name + " jacket" %>"
+                    referrerpolicy="no-referrer">
+                </td>
+                <td>
+                    <%= games[song.game - 1].name %>
                 </td>
                 <td>
                     <%= song.name %>
