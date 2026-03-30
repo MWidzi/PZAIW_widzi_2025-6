@@ -1,4 +1,4 @@
-<html lang="en">
+<html data-theme="<%- app.theme %>" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,22 @@
 </head>
 
 <body>
+    <header>
+        <nav>
+            <% if (page !== "/") { %>
+                <a href="/">Go back to your rating</a>
+            <% } %>
+        </nav>
+        <section class="controls">
+            <a href="/settings/toggle-theme?next=<%- encodeURIComponent(page) %>">
+                <% if (app.theme === "dark") { %>
+                    <strong>Dark</strong> | Light
+                <% } else { %>
+                    Dark | <strong>Light</strong>
+                <% } %>
+            </a>
+        </section>
+    </header>
     <main>
         <h1>
             <%= title %>

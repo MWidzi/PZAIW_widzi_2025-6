@@ -1,3 +1,38 @@
+<footer>
+    <!-- Based on https://gist.github.com/danielleallennn/9713ad2d95826efc60e039803eae7be6 -->
+
+    <% if (app.cookie_consent==null) { %>
+        <div id="cookie-container" class="cookie-container">
+
+            <!-- First Paragraph: Trauma-informed and human-centered language approach -->
+            <p>We respect your privacy and autonomy. Our site uses cookies to improve your
+                experience only with your consent.</p>
+
+            <!-- Second Paragraph: Empowering the user with control -->
+            <p>You decide how we can use your device's resources.</p>
+
+            <!-- Third Paragraph: Providing transparency via links to Privacy and Cookie Policy -->
+            <p>Our <a href="/privacy-policy" target="_blank" class="link_in_text">Privacy Policy</a> and <a
+                    href="/cookie-policy" target="_blank" class="link_in_text">Cookie Policy</a> are available for
+                review.</p>
+
+            <!-- Custom Line Break for visual separation, styled in CSS -->
+            <span class="custom-break"></span> <!-- Styled line break, 10px in CSS -->
+
+            <!-- Buttons Section: Accept and Decline Cookie Buttons with Manage Cookies Link -->
+            <div id="buttonContainer" class="cookie-buttons">
+                <!-- Accept Button: Approves all cookies -->
+                <a href="/settings/accept-cookies" id="acceptButton" class="cookieButton">Accept</a>
+
+                    <!-- Decline Button: Rejects all cookies except essential ones -->
+                    <a href="/settings/decline-cookies" id="declineButton" class="cookieButton">Decline</a>
+
+                        <!-- Manage Cookies Link: Directs to cookie settings -->
+                        <a href="/settings/manage-cookies" id="manage-cookies">Manage cookies</a>
+            </div>
+        </div>
+        <% } /* (app.cookie_consent==null) */ %>
+</footer>
 </main>
 </body>
 

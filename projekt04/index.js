@@ -1,22 +1,44 @@
 import express from "express";
 import morgan from "morgan";
-import songs, { getFCs } from "./utils/songs.js";
-import utils from "./utils/util_functions.js";
+import cookieParser from "cookie-parser";
 
-const port = 8000;
+import songs, { getFCs, insertSong, validateSongJacket } from "./models/songs.js";
+import utils from "./utils/util_functions.js";
+import settings from "./models/settings.js";
+
+const port = process.env.PORT || 8000;
+const COOKIES_KEY = process.env.SECRET;
+
+if (COOKIES_KEY == null) {
+    console.error("SECRET env var missing");
+    process.exit(1);
+}
 
 const app = express();
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+app.use(cookieParser(COOKIES_KEY));
 
-const songsData = songs.getOrderedLevelTable();
+app.use(settings.settingsHandler);
+
+const settingsRouter = express.Router();
+settingsRouter.use("/toggle-theme", settings.themeToggle);
+settingsRouter.use("/accept-cookies", settings.acceptCookies);
+settingsRouter.use("/decline-cookies", settings.declineCookies);
+settingsRouter.use("/manage-cookies", settings.manageCookies);
+app.use("/settings", settingsRouter);
+
+let songsData = songs.getOrderedLevelTable();
 const games = songs.getGamesTable();
+
+// TODO: usunac to jak bedzie zrobiony
+// PROJEKT NIE GOTOWY DO OCENY
 
 // Notka wstępna: tabela games jest nieedytowalna z poziomu aplikacji 'by design', tworzac analogie do projektu z fiszkami tabela scores to by byly fiszki a tabela songs to kategorie, games istnieje z powodów ideowych projektu. W związku z tym sposoby implementacji różnią się lekko od przykładowego projektu, lecz funkcjonalności zostają takie same. Informacje o terminologii używanej w nazwach zmiennych znajdują się w pliku songs.js
 
-app.get("/rating", (req, res) => {
+app.get("/", (req, res) => {
     let rating = 0;
     let fcTab = songs.getFCs();
     let apTab = songs.getAPs();
@@ -40,6 +62,7 @@ app.get("/rating", (req, res) => {
 
 // TODO: rename this to diffs
 app.get("/songs", (req, res) => {
+    songsData = songs.getOrderedLevelTable();
     res.render("songs", {
         title: "Your scores",
         data: songsData,
@@ -50,7 +73,7 @@ app.get("/songs", (req, res) => {
     });
 });
 
-app.get("/songs/:key", (req, res) => {
+app.get("/songs/view/:key", (req, res) => {
     const songKey = req.params.key;
     const song = songs.getSongDetailsWithDifficulties(songKey);
 
@@ -72,8 +95,43 @@ app.get("/songs/song_new", (req, res) => {
     });
 });
 
-app.post("/songs/song_new", (req, res) => {
-    // TODO: w projekcie przykladowym category id jest dodatkowo zrobione zeby byla przyjazna nazwa w linku, trzeba to dodać do bazy i ogolnie
+app.post("/songs/song_new", async (req, res) => {
+    let songKey = null;
+
+    const name = req.body.name;
+    const game = parseInt(req.body.game);
+    const jacket = req.body.jacket;
+    const difficulties = req.body.difficulties; // This will be an array of objects { name, level }
+
+    const nameErrors = songs.validateSongName(name);
+    const gameErrors = songs.validateSongGame(game, games);
+    const jacketErrors = await songs.validateSongJacket(jacket);
+    const difficultyErrors = songs.validateDifficulties(difficulties);
+
+    let errors = [...nameErrors, ...gameErrors, ...jacketErrors, ...difficultyErrors];
+
+    if (errors.length == 0) {
+        songKey = songs.generateSongKey(name, game, games);
+        if (songs.songExists(songKey)) {
+            errors.push(`Song with key ${songKey} already exists`);
+        }
+    }
+
+    if (errors.length == 0) {
+        const newSong = songs.insertSong(game, songKey, name, jacket);
+        songs.insertDifficulties(newSong.song_id, difficulties);
+        res.redirect(`/songs/view/${songKey}`);
+    } else {
+        res.render("song_new", {
+            errors,
+            title: "New song",
+            name: name,
+            jacket: jacket,
+            game: game,
+            games: games,
+            difficulties: difficulties // Pass difficulties back to the form
+        });
+    }
 });
 
 app.post("/songs/saveRating", (req, res) => {
@@ -82,7 +140,7 @@ app.post("/songs/saveRating", (req, res) => {
 
     songs.validateAndSetWeighedTabs(apIds, fcIds);
 
-    res.redirect(`/rating`);
+    res.redirect(`/`);
 });
 
 app.listen(port, () => {

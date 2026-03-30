@@ -1,4 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
+import hepburn from "hepburn";
 
 const db_path = "./db.sqlite";
 const db = new DatabaseSync(db_path);
@@ -37,8 +38,8 @@ db.exec(`
 `);
 
 const db_ops = {
-    insert_songs: db.prepare(`INSERT INTO songs (game, name)
-        VALUES (?, ?) RETURNING song_id, game, name, jacket;`
+    insert_songs: db.prepare(`INSERT INTO songs (game, key, name, jacket)
+        VALUES (?, ?, ?, ?) RETURNING song_id, game, name, jacket;`
     ),
     insert_song_difficulty: db.prepare(`INSERT INTO song_difficulty (song_id, difficulty, level)
         VALUES (?, ?, ?) RETURNING sd_id, song_id, difficulty, level;`
@@ -63,12 +64,13 @@ const db_ops = {
         ORDER BY
             lvl DESC
     `),
-    select_games_table: db.prepare(`SELECT name FROM games`),
+    select_games_table: db.prepare(`SELECT game_id, name, name_short FROM games`),
     add_scores: db.prepare(`INSERT INTO scores (sd_id, type) VALUES (?, ?) RETURNING score_id, sd_id, type`),
     delete_scores: db.prepare(`DELETE FROM scores WHERE sd_id = ?`),
     update_score_type: db.prepare(`UPDATE scores SET type = ? WHERE sd_id = ?`),
     get_game_min_max_diff: db.prepare(`SELECT max(song_difficulty.level) AS 'max', min(song_difficulty.level) AS 'min' FROM songs JOIN song_difficulty ON song_difficulty.song_id = songs.song_id WHERE songs.game = ?`),
     select_song_by_key: db.prepare(`SELECT * FROM songs WHERE songs.key LIKE ?`),
+    select_difficulties_by_song_id: db.prepare(`SELECT sd_id, difficulty, level FROM song_difficulty WHERE song_id = ?`),
 
 };
 
@@ -167,33 +169,168 @@ export function validateAndSetWeighedTabs(apIds, fcIds) {
     FCs = db_ops.select_scores_by_type.all("FC");
 }
 
-// TODO: Dodać walidację nazwy piosenki oraz czy link do jacketa zwraca 404 czy nie
+export function validateSongName(name) {
+    var errors = [];
+
+    if (typeof name != "string") {
+        errors.push("Song name should be a string");
+    } else {
+        if (name.length < 3 || name.length > 100) {
+            errors.push("Song name should have 3-100 characters");
+        }
+    }
+
+    return errors;
+}
+
+export async function validateSongJacket(url) {
+    var errors = [];
+
+    if (typeof url != "string") {
+        errors.push("Url needs to be a string");
+        return errors;
+    }
+
+    try {
+        new URL(url);
+    } catch {
+        errors.push(`${url}: Invalid URL format`);
+        return errors;
+    }
+
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+
+        if (response.status === 404) {
+            errors.push(`${url}: 404, resource not found`)
+        }
+    } catch (error) {
+        errors.push(`${url}: ${error.name || 'Error'} - ${error.message}`);
+    }
+
+    return errors;
+}
+
+export function validateSongGame(game, games) {
+    var errors = [];
+
+    if (typeof game !== 'number' || !Number.isInteger(game)) {
+        errors.push("Game needs to be an int");
+    } else {
+        const gameExists = games.some(gameItem => gameItem.game_id === game);
+        if (!gameExists) {
+            errors.push("Game is not supported");
+        }
+    }
+
+    return errors;
+}
+
+export function generateSongKey(name, game, games) {
+    // Konwersja na romaji jesli string zawiera kane
+    // dla informacji: 
+    //   kana - alfabety japonskie
+    //   romaji - dzwieki jezyka japonskiego zapisane w łaćińskich literach
+
+    let processedName = name;
+    if (hepburn.containsKana(name)) {
+        processedName = hepburn.fromKana(name).toLowerCase();
+    }
+
+    // mini funkcja zmodyfikowana przez llm
+    function slugify(str) {
+        return str.toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s.-]/g, "")
+            .replace(/\s+/g, " ")
+            .replace(/(\s|[.-])+/g, "-")
+            .replace(/-+/g, "-")
+            .replace(/^-|-$/g, "");
+    }
+
+    const gameName = slugify(games[game - 1].name_short);
+    const songName = slugify(processedName);
+
+    return gameName + "-" + songName;
+}
+
+export function songExists(songKey) {
+    let song = db_ops.select_song_by_key.get(songKey);
+    return song != null;
+}
+
+export function insertSong(game, key, name, jacket) {
+    return db_ops.insert_songs.get(game, key, name, jacket);
+}
 
 export function getSongDetailsWithDifficulties(songKey) {
-    const allSongsWithDifficulties = getOrderedLevelTable();
-    const filteredDifficulties = allSongsWithDifficulties.filter(song => song.key === songKey);
+    const songEntry = db_ops.select_song_by_key.get(songKey);
 
-    if (filteredDifficulties.length === 0) {
+    if (!songEntry) {
         return null; // Song not found
     }
 
+    const difficulties = db_ops.select_difficulties_by_song_id.all(songEntry.song_id);
+
     const song = {
-        game: filteredDifficulties[0].game,
-        key: filteredDifficulties[0].key,
-        name: filteredDifficulties[0].name,
-        jacket: filteredDifficulties[0].jacket,
-        difficulties: []
+        song_id: songEntry.song_id,
+        game: songEntry.game,
+        key: songEntry.key,
+        name: songEntry.name,
+        jacket: songEntry.jacket,
+        difficulties: difficulties.map(diff => ({
+            name: diff.difficulty,
+            level: diff.level,
+            sd_id: diff.sd_id
+        }))
     };
 
-    filteredDifficulties.forEach(entry => {
-        song.difficulties.push({
-            name: entry.difficulty,
-            level: entry.lvl,
-            sd_id: entry.sd_id
-        });
+    return song;
+}
+
+// Sekcja związana z insertowaniem poziomów trudności wraz z piosenką wygenerowana przez llm
+export function insertDifficulties(song_id, difficulties) {
+    db.exec('BEGIN');
+    try {
+        for (const diff of difficulties) {
+            db_ops.insert_song_difficulty.run(song_id, diff.name, diff.level);
+        }
+        db.exec('COMMIT');
+    } catch (error) {
+        console.error("Failed to insert difficulties, rolling back:", error);
+        db.exec('ROLLBACK');
+        throw error;
+    }
+}
+
+export function validateDifficulties(difficulties) {
+    const errors = [];
+
+    if (!Array.isArray(difficulties) || difficulties.length === 0) {
+        errors.push("At least one difficulty must be provided.");
+        return errors;
+    }
+
+    difficulties.forEach((diff, index) => {
+        if (!diff || typeof diff !== 'object') {
+            errors.push(`Difficulty entry ${index + 1} is malformed.`);
+            return;
+        }
+
+        const { name, level } = diff;
+
+        if (typeof name !== 'string' || name.trim().length < 1 || name.trim().length > 50) {
+            errors.push(`Difficulty name for entry ${index + 1} must be a string between 1 and 50 characters.`);
+        }
+
+        const parsedLevel = parseInt(level, 10);
+        if (isNaN(parsedLevel)) {
+            errors.push(`Difficulty level for entry ${index + 1} must be an integer`);
+        }
+        diff.level = parsedLevel;
     });
 
-    return song;
+    return errors;
 }
 
 export default {
@@ -203,5 +340,13 @@ export default {
     calcSongRating,
     validateAndSetWeighedTabs,
     getGamesTable,
-    getSongDetailsWithDifficulties
+    getSongDetailsWithDifficulties,
+    validateSongName,
+    validateSongJacket,
+    validateSongGame,
+    generateSongKey,
+    songExists,
+    insertSong,
+    insertDifficulties,
+    validateDifficulties
 }

@@ -2,29 +2,112 @@
     <table id="new_song_table">
         <tr>
             <td><label for="name">Song name: </label></td>
-            <td><input type="text" name="name"><br></td>
+            <td><input type="text" name="name"
+                <% if (locals.name){ %>
+                    value="<%= name %>"
+                <% }%>
+            ><br></td>
         </tr>
         <tr>
             <td><label for="jacket">Song jacket: </label></td>
-            <td><input type="text" name="jacket"><br></td>
+            <td><input type="text" name="jacket"
+                <% if (locals.jacket){ %>
+                    value="<%= jacket %>"
+                <% }%>
+            ><br></td>
         </tr>
         <tr>
             <td><label for="game">Game: </label></td>
             <td>
                 <select name="game" id="game_select">
-                    <% games.forEach((game)=> { %>
-                        <option value="<%= game.name %>">
-                            <%= game.name %>
+                    <% games.forEach((gameItem)=> { %>
+                        <option value="<%= gameItem.game_id %>" <%= (locals.game && parseInt(locals.game) === gameItem.game_id) ? 'selected' : '' %>>
+                            <%= gameItem.name %>
                         </option>
                         <% }) %>
                 </select><br>
             </td>
         </tr>
-        <tr>
-            <td><label for="jacket">Jacket link: </label></td>
-            <td><input type="text" name="jacket"><br></td>
-        </tr>
     </table>
     <br>
-    <input type="submit" value="Update rating"><br>
+    
+    <% // sekcja zwiazana z dynamicznym wyswietlaniem pól do wpisywania poziomów wygenerowana przez llm %>
+    
+    <h2>Difficulties</h2>
+    <div id="difficulties_container">
+        <% if (locals.difficulties && difficulties.length > 0) { %>
+            <% difficulties.forEach((diff, index) => { %>
+                <div class="difficulty_entry">
+                    <label for="difficulty_name_<%= index %>">Difficulty Name:</label>
+                    <input type="text" name="difficulties[<%= index %>][name]" id="difficulty_name_<%= index %>" value="<%= diff.name %>" required>
+                    <label for="difficulty_level_<%= index %>">Level:</label>
+                    <input type="number" name="difficulties[<%= index %>][level]" id="difficulty_level_<%= index %>" value="<%= diff.level %>" required>
+                    <button type="button" class="remove_difficulty_button">Remove</button>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="difficulty_entry">
+                <label for="difficulty_name_0">Difficulty Name:</label>
+                <input type="text" name="difficulties[0][name]" id="difficulty_name_0" required>
+                <label for="difficulty_level_0">Level:</label>
+                <input type="number" name="difficulties[0][level]" id="difficulty_level_0" required>
+                <button type="button" class="remove_difficulty_button">Remove</button>
+            </div>
+        <% } %>
+    </div>
+    <br>
+    <button type="button" id="add_difficulty_button">Add Difficulty</button>
+    <br>
+    <br>
+    <input type="submit" value="Add song"><br>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const difficultiesContainer = document.getElementById('difficulties_container');
+        const addDifficultyButton = document.getElementById('add_difficulty_button');
+
+        function updateDifficultyIndices() {
+            difficultiesContainer.querySelectorAll('.difficulty_entry').forEach((entry, index) => {
+                entry.querySelectorAll('input, select').forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/difficulties\[\d+\]/, `difficulties[${index}]`);
+                    }
+                    if (input.id) {
+                        input.id = input.id.replace(/difficulty_name_\d+/, `difficulty_name_${index}`);
+                        input.id = input.id.replace(/difficulty_level_\d+/, `difficulty_level_${index}`);
+                    }
+                });
+                entry.querySelector('label[for^="difficulty_name_"]').setAttribute('for', `difficulty_name_${index}`);
+                entry.querySelector('label[for^="difficulty_level_"]').setAttribute('for', `difficulty_level_${index}`);
+            });
+        }
+
+        addDifficultyButton.addEventListener('click', () => {
+            const newIndex = difficultiesContainer.children.length;
+            const newDifficultyEntry = document.createElement('div');
+            newDifficultyEntry.classList.add('difficulty_entry');
+            newDifficultyEntry.innerHTML = `
+                <label for="difficulty_name_${newIndex}">Difficulty Name:</label>
+                <input type="text" name="difficulties[${newIndex}][name]" id="difficulty_name_${newIndex}" required>
+                <label for="difficulty_level_${newIndex}">Level:</label>
+                <input type="number" name="difficulties[${newIndex}][level]" id="difficulty_level_${newIndex}" required>
+                <button type="button" class="remove_difficulty_button">Remove</button>
+            `;
+            difficultiesContainer.appendChild(newDifficultyEntry);
+            updateDifficultyIndices();
+        });
+
+        difficultiesContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove_difficulty_button')) {
+                event.target.closest('.difficulty_entry').remove();
+                updateDifficultyIndices();
+            }
+        });
+
+        // Ensure there's at least one difficulty entry when loaded
+        if (difficultiesContainer.children.length === 0) {
+            addDifficultyButton.click();
+        }
+    });
+</script>
