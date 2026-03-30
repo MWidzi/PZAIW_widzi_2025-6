@@ -70,6 +70,9 @@ const db_ops = {
     update_score_type: db.prepare(`UPDATE scores SET type = ? WHERE sd_id = ?`),
 };
 
+// AP - All Perfect
+// FC - Full Combo
+// są to typy wyników aplikowalne do prawie każdej gry rytmicznej
 var APs = db_ops.select_scores_by_type.all("AP");
 var FCs = db_ops.select_scores_by_type.all("FC");
 
