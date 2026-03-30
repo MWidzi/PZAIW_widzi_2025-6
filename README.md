@@ -5,6 +5,7 @@ Repozytorium do programowania zaawansowanych aplikacji webowych w roku szkolnym 
 - projekt na 13-10-2025: first-server
 - projekt na 10-11-2025: projekt02 
 - projekt na 15-12-2025: projekt03
+- projekt na 30-02-2026: projekt04 **!!!! NIE GOTOWY DO OCENY**
 
 ## README do projekt03
 ### Konfiguracja: 
