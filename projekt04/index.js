@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import songs, { getFCs, insertSong, validateSongJacket } from "./models/songs.js";
 import utils from "./utils/util_functions.js";
 import settings from "./models/settings.js";
+import session from "./models/session.js";
+import auth from "./controllers/authentication.js";
 
 const port = process.env.PORT || 8000;
 const COOKIES_KEY = process.env.SECRET;
@@ -22,6 +24,7 @@ app.use(morgan("dev"));
 app.use(cookieParser(COOKIES_KEY));
 
 app.use(settings.settingsHandler);
+app.use(session.sessionHandler);
 
 const settingsRouter = express.Router();
 settingsRouter.use("/toggle-theme", settings.themeToggle);
@@ -29,6 +32,14 @@ settingsRouter.use("/accept-cookies", settings.acceptCookies);
 settingsRouter.use("/decline-cookies", settings.declineCookies);
 settingsRouter.use("/manage-cookies", settings.manageCookies);
 app.use("/settings", settingsRouter);
+
+const authRouter = express.Router();
+authRouter.get("/signup", auth.signup_get);
+authRouter.post("/signup", auth.signup_post);
+authRouter.get("/login", auth.login_get);
+authRouter.post("/login", auth.login_post);
+authRouter.get("/logout", auth.logout);
+app.use("/auth", authRouter);
 
 let songsData = songs.getOrderedLevelTable();
 const games = songs.getGamesTable();

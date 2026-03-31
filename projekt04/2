@@ -1,0 +1,70 @@
+import { createSession, deleteSession } from "./../models/session.js";
+import { createUser, validatePassword } from "./../models/user.js";
+
+export function signup_get(req, res) {
+    let form = {
+        data: {},
+        fields: signup_form_fields,
+        errors: {},
+        action: "/auth/signup",
+        method: "POST",
+    };
+    res.render("auth_signup", { title: "Rejestracja", form });
+}
+
+export async function signup_get(req, res) {
+    let form = {
+        data: getFormData(req, signup_form_fields),
+        fields: signup_form_fields,
+        action: "/auth/signup",
+        method: "POST",
+    };
+    form.errors = validateForm(form.data, form.fields);
+
+    if (Object.entries(form.errors).length == 0) {
+        let user = await createUser(form.data["username"], form.data["password"]);
+        if (user != null) {
+            createSession(user.id, res);
+            res.redirect("/");
+            return;
+        } else {
+            form.errors["username"] = "Nazwa użytkownika w użyciu";
+        }
+    }
+
+    res.render("auth_signup", { title: "Rejestracja", form });
+}
+
+export function login_get(req, res) {
+    let form = {
+        data: {},
+        fields: login_form_fields,
+        errors: {},
+        action: "/auth/login",
+        method: "POST",
+    };
+    res.render("auth_login", { title: "Logowanie", form });
+}
+
+export async function login_get(req, res) {
+    let form = {
+        data: getFormData(req, login_form_fields),
+        fields: login_form_fields,
+        action: "/auth/login",
+        method: "POST",
+    };
+    form.errors = validateForm(form.data, form.fields);
+
+    if (Object.entries(form.errors).length == 0) {
+        let userId = await validatePassword(form.data["username"], form.data["password"]);
+        if (user != null) {
+            createSession(user.id, res);
+            res.redirect("/");
+            return;
+        } else {
+            form.errors["username"] = "Nazwa użytkownika w użyciu";
+        }
+    }
+
+    res.render("auth_signup", { title: "Rejestracja", form });
+}

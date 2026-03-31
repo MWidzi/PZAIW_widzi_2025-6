@@ -21,14 +21,14 @@ export function themeToggle(req, res) {
 }
 
 export function acceptCookies(req, res) {
-    res.cookie(CONSENT_COOKIE, true, { maxAge: ONE_MONTH });
+    res.cookie(CONSENT_COOKIE, true, { maxAge: ONE_MONTH, secure: true });
 
     var next = req.query.next || "/";
     res.redirect(next);
 }
 
 export function declineCookies(req, res) {
-    res.cookie(CONSENT_COOKIE, false, { maxAge: ONE_MONTH });
+    res.cookie(CONSENT_COOKIE, false, { maxAge: ONE_MONTH, secure: true });
 
     var next = req.query.next || "/";
     res.redirect(next);

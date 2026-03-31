@@ -1,0 +1,41 @@
+<form action="<%- action %>" method="<%- method %>">
+    <ul>
+        <% if (errors && Array.isArray(errors)) { %>
+            <% errors.forEach(error=> { %>
+                <li><%= error %></li>          
+            <% }) %>
+        <% } %>
+    </ul>
+    <table>
+        <% fields.forEach(field=> { %>
+            <tr>
+                <td>
+                    <label for="field_<%- field.name %>">
+                        <%= field.display_name %>
+                    </label>
+                </td>
+                <td>
+                    <div class="form-input">
+                        <input 
+                            type="<%- field.type %>"
+                            name="<%- field.name %>"
+                            id="field_<%- field.type %>" 
+                            <% if (field.required) { %>
+                                required
+                            <% } %>
+                            <% if (field.min_length) { %>
+                                minlength="<%- field.min_length %>"
+                            <% } %>
+                            <% if (field.max_length) { %>
+                                maxlength="<%- field.max_length %>"
+                            <% } %>
+                            <% if (data[field.name]) { %>
+                                value="<%- data[field.name] %>"
+                            <% } %>
+                        />
+                    </div>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+</form>
