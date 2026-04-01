@@ -57,7 +57,7 @@ export async function createUser(username, password) {
 export async function validatePassword(username, password) {
     let authData = db_ops.get_auth_data.get(username);
     if (authData != null) {
-        if (await argon2.verify(authData.passwordHash, password, HASH_PARAMETERS)) {
+        if (await argon2.verify(authData.password_hash, password, HASH_PARAMETERS)) {
             return authData.id;
         }
     }
@@ -66,7 +66,7 @@ export async function validatePassword(username, password) {
 }
 
 export function getUser(userId) {
-    return db_ops.getUser.get(userId);
+    return db_ops.get_user.get(userId);
 }
 
 export default {

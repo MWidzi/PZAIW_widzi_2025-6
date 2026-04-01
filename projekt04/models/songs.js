@@ -27,7 +27,9 @@ db.exec(`
     CREATE TABLE IF NOT EXISTS scores (
         score_id INTEGER PRIMARY KEY AUTOINCREMENT,
         sd_id INTEGER NOT NULL REFERENCES song_difficulty(sd_id) ON DELETE NO ACTION,
-        type TEXT NOT NULL
+        type TEXT NOT NULL,
+        "user_id"	INT NOT NULL,
+        FOREIGN KEY("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
     ) STRICT;
 
     CREATE TABLE IF NOT EXISTS games (
@@ -44,10 +46,12 @@ const db_ops = {
     insert_song_difficulty: db.prepare(`INSERT INTO song_difficulty (song_id, difficulty, level)
         VALUES (?, ?, ?) RETURNING sd_id, song_id, difficulty, level;`
     ),
-    insert_scores: db.prepare(`INSERT INTO scores (sd_id, type)
-        VALUES (?, ?) RETURNING score_id, sd_id, type;`
+    insert_scores: db.prepare(`INSERT INTO scores (sd_id, type, user_id)
+        VALUES (?, ?, ?) RETURNING score_id, sd_id, type;`
     ),
-    select_scores_by_type: db.prepare(`SELECT * FROM scores WHERE type LIKE ?`),
+    delete_scores: db.prepare(`DELETE FROM scores WHERE sd_id = ? AND user_id = ?`),
+    select_scores_by_type: db.prepare(`SELECT * FROM scores WHERE type LIKE ? AND user_id = ?`),
+    update_score_type: db.prepare(`UPDATE scores SET type = ? WHERE sd_id = ? AND user_id = ?`),
     select_orderedLevelTable: db.prepare(`
         SELECT
             s.game as game,
@@ -65,21 +69,17 @@ const db_ops = {
             lvl DESC
     `),
     select_games_table: db.prepare(`SELECT game_id, name, name_short FROM games`),
-    add_scores: db.prepare(`INSERT INTO scores (sd_id, type) VALUES (?, ?) RETURNING score_id, sd_id, type`),
-    delete_scores: db.prepare(`DELETE FROM scores WHERE sd_id = ?`),
-    update_score_type: db.prepare(`UPDATE scores SET type = ? WHERE sd_id = ?`),
     get_game_min_max_diff: db.prepare(`SELECT max(song_difficulty.level) AS 'max', min(song_difficulty.level) AS 'min' FROM songs JOIN song_difficulty ON song_difficulty.song_id = songs.song_id WHERE songs.game = ?`),
     select_song_by_key: db.prepare(`SELECT * FROM songs WHERE songs.key LIKE ?`),
     select_difficulties_by_song_id: db.prepare(`SELECT sd_id, difficulty, level FROM song_difficulty WHERE song_id = ?`),
+    select_all_songs: db.prepare(`SELECT * FROM songs`),
 
 };
 
+// WYTŁUMACZNIE TERMINOLOGII
 // AP - All Perfect (trafienie wszystkich nutek w ramach najwyższego timing judgementu)
 // FC - Full Combo (trafienie wszystkich nutek, ale np z lekkim opoznieniem)
 // są to typy wyników końcowych aplikowalne do prawie każdej gry rytmicznej
-
-var APs = db_ops.select_scores_by_type.all("AP");
-var FCs = db_ops.select_scores_by_type.all("FC");
 
 if (process.env.POPULATE_DB) {
     console.log("Populating db...");
@@ -122,22 +122,33 @@ export function calcSongRating(game, lvl) {
     return (lvl / maxLevel) * 10.0;
 }
 
-export function getAPs() {
-    return APs.map(score => score.sd_id);
+export function getAPs(userId) {
+    if (!userId) {
+        return [];
+    }
+    return db_ops.select_scores_by_type.all("AP", userId).map(score => score.sd_id);
 }
 
-export function getFCs() {
-    return FCs.map(score => score.sd_id);
+export function getFCs(userId) {
+    if (!userId) {
+        return [];
+    }
+    return db_ops.select_scores_by_type.all("FC", userId).map(score => score.sd_id);
 }
 
 // funkcja której logikę napisałem ja a LLM ją "podrasował"
-export function validateAndSetWeighedTabs(apIds, fcIds) {
+export function validateAndSetWeighedTabs(apIds, fcIds, userId) {
+    if (!userId) {
+        console.warn("Attempted to validate and set weighed tabs without a user ID.");
+        return;
+    }
+
     const newApIds = new Set((Array.isArray(apIds) ? apIds : (apIds ? [apIds] : [])).map(id => parseInt(id, 10)));
     const newFcIdsRaw = (Array.isArray(fcIds) ? fcIds : (fcIds ? [fcIds] : [])).map(id => parseInt(id, 10));
 
     const newFcIds = new Set(newFcIdsRaw.filter(id => !newApIds.has(id)));
 
-    const allScores = db_ops.select_scores_by_type.all('%');
+    const allScores = db_ops.select_scores_by_type.all('%', userId);
     const currentApIds = new Set(allScores.filter(s => s.type === 'AP').map(s => s.sd_id));
     const currentFcIds = new Set(allScores.filter(s => s.type === 'FC').map(s => s.sd_id));
 
@@ -152,21 +163,18 @@ export function validateAndSetWeighedTabs(apIds, fcIds) {
 
     try {
         db.exec('BEGIN');
-        for (const id of idsToAddAsAp) db_ops.add_scores.run(id, 'AP');
-        for (const id of idsToAddAsFc) db_ops.add_scores.run(id, 'FC');
+        for (const id of idsToAddAsAp) db_ops.insert_scores.run(id, 'AP', userId);
+        for (const id of idsToAddAsFc) db_ops.insert_scores.run(id, 'FC', userId);
 
-        for (const id of uniqueIdsToRemove) db_ops.delete_scores.run(id);
+        for (const id of uniqueIdsToRemove) db_ops.delete_scores.run(id, userId);
 
-        for (const id of idsToUpdateToAp) db_ops.update_score_type.run('AP', id);
-        for (const id of idsToUpdateToFc) db_ops.update_score_type.run('FC', id);
+        for (const id of idsToUpdateToAp) db_ops.update_score_type.run('AP', id, userId);
+        for (const id of idsToUpdateToFc) db_ops.update_score_type.run('FC', id, userId);
         db.exec('COMMIT');
     } catch (err) {
         console.error("Transaction failed, rolling back.", err);
         db.exec('ROLLBACK');
     }
-
-    APs = db_ops.select_scores_by_type.all("AP");
-    FCs = db_ops.select_scores_by_type.all("FC");
 }
 
 export function validateSongName(name) {
@@ -333,6 +341,10 @@ export function validateDifficulties(difficulties) {
     return errors;
 }
 
+export function getAllSongs() {
+    return db_ops.select_all_songs.all();
+}
+
 export default {
     getOrderedLevelTable,
     getAPs,
@@ -348,5 +360,6 @@ export default {
     songExists,
     insertSong,
     insertDifficulties,
-    validateDifficulties
+    validateDifficulties,
+    getAllSongs,
 }

@@ -1,5 +1,10 @@
-<form method="POST" action="/saveRating">
-    <input type="submit" value="Update rating">
+<h1>
+    <%= rating %>
+</h1>
+<% if (rating===0) { %>
+    <p>No songs added, go <a href="/diffs"><b>here</b></a> to add songs</p>
+<% } else { %>
+    <a href="/diffs"><b>Edit Scores</b></a><br><br><br><br>
     <table>
         <thead>
             <tr>
@@ -7,13 +12,13 @@
                 <th>game</th>
                 <th>name</th>
                 <th>level</th>
+                <th>rating</th>
                 <th>difficulty</th>
-                <th>FC</th>
-                <th>AP</th>
             </tr>
         </thead>
-        <% data.forEach(function(song) { %>
-            <tr>
+        <% data.forEach(function(song) { var fc=fcTab && fcTab.includes(song.sd_id); var ap=apTab &&
+            apTab.includes(song.sd_id); if (fc || ap) { %>
+            <tr class="<%= fc ? 'tr_fc' : 'tr_ap' %>">
                 <td>
                     <img class="smallImg" src="<%= song.jacket %>" alt="<%= song.name + " jacket" %>"
                     referrerpolicy="no-referrer">
@@ -28,17 +33,12 @@
                     <%= song.lvl %>
                 </td>
                 <td>
+                    <%= calcSongRating(song.game, fc ? song.lvl - 1 : song.lvl).toFixed(2) %>
+                </td>
+                <td>
                     <%= song.difficulty %>
                 </td>
-                <td>
-                    <input type="checkbox" name="songFcIds" value="<%= song.sd_id %>" <% if(fcTab &&
-                        fcTab.includes(song.sd_id)) { %>checked<% } %>>
-                </td>
-                <td>
-                    <input type="checkbox" name="songApIds" value="<%= song.sd_id %>" <% if(apTab &&
-                        apTab.includes(song.sd_id)) { %>checked<% } %>>
-                </td>
             </tr>
-            <% })%>
+            <% }})%>
     </table>
-</form>
+<% } %>

@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { randomBytes } from "node:crypto";
+import { getUser } from "../models/user.js";
 
 const db_path = "./db.sqlite";
 const db = new DatabaseSync(db_path, { readBigInts: true });
@@ -37,7 +38,7 @@ export function createSession(user, res) {
     res.locals.session = session;
     res.locals.user = session.user_id != null ? getUser(session.user_id) : null;
 
-    res.cookie(SESSION_COOKIE, {
+    res.cookie(SESSION_COOKIE, sessionId.toString(), {
         maxAge: ONE_WEEK,
         httpOnly: true,
         secure: true,

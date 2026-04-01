@@ -12,7 +12,7 @@
 <body>
     <header>
         <nav>
-            <% if (page !== "/") { %>
+            <% if (page !== "/" && user) { %>
                 <a href="/">Go back to your rating</a>
             <% } %>
         </nav>
@@ -35,6 +35,7 @@
                 <% } %>
             <% } %>
         </section>
+        <a href="/songs">Song list</a>
     </header>
     <main>
         <h1>

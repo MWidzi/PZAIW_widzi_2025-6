@@ -2,7 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
-import songs, { getFCs, insertSong, validateSongJacket } from "./models/songs.js";
+import songs, { getAllSongs, getFCs, insertSong, validateSongJacket } from "./models/songs.js";
 import utils from "./utils/util_functions.js";
 import settings from "./models/settings.js";
 import session from "./models/session.js";
@@ -50,9 +50,10 @@ const games = songs.getGamesTable();
 // Notka wstępna: tabela games jest nieedytowalna z poziomu aplikacji 'by design', tworzac analogie do projektu z fiszkami tabela scores to by byly fiszki a tabela songs to kategorie, games istnieje z powodów ideowych projektu. W związku z tym sposoby implementacji różnią się lekko od przykładowego projektu, lecz funkcjonalności zostają takie same. Informacje o terminologii używanej w nazwach zmiennych znajdują się w pliku songs.js
 
 app.get("/", (req, res) => {
+    const userId = res.locals.user ? res.locals.user.id : null;
     let rating = 0;
-    let fcTab = songs.getFCs();
-    let apTab = songs.getAPs();
+    let fcTab = songs.getFCs(userId);
+    let apTab = songs.getAPs(userId);
 
     rating = utils.increaseRating(fcTab, songs, songsData, rating, 1);
     rating = utils.increaseRating(apTab, songs, songsData, rating);
@@ -72,15 +73,24 @@ app.get("/", (req, res) => {
 });
 
 // TODO: rename this to diffs
-app.get("/songs", (req, res) => {
+app.get("/diffs", (req, res) => {
+    const userId = res.locals.user ? res.locals.user.id : null;
     songsData = songs.getOrderedLevelTable();
-    res.render("songs", {
+    res.render("diffs", {
         title: "Your scores",
         data: songsData,
         games: games,
-        apTab: songs.getAPs(),
-        fcTab: songs.getFCs(),
+        apTab: songs.getAPs(userId),
+        fcTab: songs.getFCs(userId),
         utils: utils
+    });
+});
+
+app.get("/songs", (req, res) => {
+    res.render("songs", {
+        title: "All songs",
+        songs: songs.getAllSongs(),
+        games: games,
     });
 });
 
@@ -145,11 +155,12 @@ app.post("/songs/song_new", async (req, res) => {
     }
 });
 
-app.post("/songs/saveRating", (req, res) => {
+app.post("/saveRating", (req, res) => {
+    const userId = res.locals.user ? res.locals.user.id : null;
     let apIds = req.body.songApIds;
     let fcIds = req.body.songFcIds;
 
-    songs.validateAndSetWeighedTabs(apIds, fcIds);
+    songs.validateAndSetWeighedTabs(apIds, fcIds, userId);
 
     res.redirect(`/`);
 });

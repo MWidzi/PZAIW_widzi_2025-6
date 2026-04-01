@@ -136,7 +136,7 @@ function getFormData(req, fields) {
     return data;
 }
 
-function validateFormData(data, fields) {
+function validateForm(data, fields) {
     const errors = {};
 
     fields.forEach(field => {

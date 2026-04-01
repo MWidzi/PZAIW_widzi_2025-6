@@ -77,6 +77,18 @@ a {
     color: var(--link-bg-color);
 }
 
+.song-card a {
+    background-color: transparent;
+    color: var(--link-bg-color);
+    padding: 0;
+    border-radius: 0;
+    text-decoration: none;
+}
+
+.song-card a:hover {
+    text-decoration: underline;
+}
+
 
 input[type="submit"] {
     background-color: var(--link-bg-color);
@@ -355,7 +367,7 @@ a.cookieButton {
     }
 }
 
-/* Responsive Design for Tablet (between 601px and 1024px) */
+    /* Responsive Design for Tablet (between 601px and 1024px) */
 @media (min-width: 601px) and (max-width: 1024px) {
     .cookie-container {
         width: 70%; /* Adjusted width for tablet screens */
@@ -377,4 +389,26 @@ a.cookieButton {
     #buttonContainer {
         gap: 12px;
     }
+}
+
+/* Auto-fill background override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--background) inset !important;
+    box-shadow: 0 0 0 30px var(--background) inset !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    caret-color: var(--text-color) !important; /* Ensures cursor remains visible */
+}
+
+/* For Firefox, if necessary, though -webkit-autofill often covers it */
+input:-internal-autofill-selected {
+    background-color: var(--background) !important;
+    color: var(--text-color) !important;
+}
+
+.form-table-centered {
+    margin: 0 auto;
+    width: fit-content;
 }

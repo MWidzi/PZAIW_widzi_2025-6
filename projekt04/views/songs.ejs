@@ -1,8 +1,14 @@
 <%- include("header.ejs") %>
 
-<a href="/songs/song_new"><b>Add song</b></a>
-<br>
-<br>
-<%- include("scores_form.ejs") %>
+    <div class="song-list">
+        <% songs.forEach(song => { %>
+            <div class="song-card">
+                <img src="<%= song.jacket %>" alt="<%= song.name %> jacket" referrerpolicy="no-referrer">
+                <a href="/songs/view/<%= song.key %>"><h2><%= song.name %></h2></a>
+                <p><%= games[song.game - 1].name %></p>
+            </div>
+    <br><br>
+        <% }) %>
+    </div>
 
 <%- include("footer.ejs") %>
