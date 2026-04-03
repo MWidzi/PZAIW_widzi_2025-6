@@ -1,14 +1,9 @@
 <%- include("header.ejs") %>
 
-<a href="/songs/song_new"><b>Add song</b></a>
-<br>
-<br>
-
 <% if (user) { %>
     <%- include("scores_form.ejs") %>
 <% } else { %>
     <%- include("not_logged_in_message.ejs") %>
 <% } %>
-
 
 <%- include("footer.ejs") %>

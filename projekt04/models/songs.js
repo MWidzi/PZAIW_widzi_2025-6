@@ -1,5 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import hepburn from "hepburn";
+import fs from "node:fs";
+import path from "node:path";
 
 const db_path = "./db.sqlite";
 const db = new DatabaseSync(db_path);
@@ -7,6 +9,8 @@ const db = new DatabaseSync(db_path);
 console.log("Creating tables");
 
 db.exec(`
+    PRAGMA foreign_keys = ON;
+
     CREATE TABLE IF NOT EXISTS songs (
         "song_id"	INTEGER,
         "game"	INTEGER NOT NULL,
@@ -19,14 +23,15 @@ db.exec(`
 
     CREATE TABLE IF NOT EXISTS song_difficulty (
         sd_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        song_id INTEGER NOT NULL REFERENCES songs(song_id) ON DELETE NO ACTION,
+        song_id INTEGER NOT NULL REFERENCES songs(song_id) ON DELETE CASCADE,
         difficulty TEXT NOT NULL,
-        level INTEGER NOT NULL
+        level INTEGER NOT NULL,
+        FOREIGN KEY("song_id") REFERENCES "songs"("song_id") ON DELETE CASCADE
     ) STRICT;
 
     CREATE TABLE IF NOT EXISTS scores (
         score_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        sd_id INTEGER NOT NULL REFERENCES song_difficulty(sd_id) ON DELETE NO ACTION,
+        sd_id INTEGER NOT NULL REFERENCES song_difficulty(sd_id) ON DELETE CASCADE,
         type TEXT NOT NULL,
         "user_id"	INT NOT NULL,
         FOREIGN KEY("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
@@ -73,27 +78,19 @@ const db_ops = {
     select_song_by_key: db.prepare(`SELECT * FROM songs WHERE songs.key LIKE ?`),
     select_difficulties_by_song_id: db.prepare(`SELECT sd_id, difficulty, level FROM song_difficulty WHERE song_id = ?`),
     select_all_songs: db.prepare(`SELECT * FROM songs`),
+    update_song: db.prepare(`
+        UPDATE songs
+        SET game = ?, key = ?, name = ?, jacket = ?
+        WHERE song_id = ?;
+    `),
+    delete_difficulties_by_song_id: db.prepare(`
+        DELETE FROM song_difficulty WHERE song_id = ?;
+    `),
+    delete_song_by_key: db.prepare(`
+        DELETE FROM songs WHERE key = ?;
+    `),
 
 };
-
-// WYTŁUMACZNIE TERMINOLOGII
-// AP - All Perfect (trafienie wszystkich nutek w ramach najwyższego timing judgementu)
-// FC - Full Combo (trafienie wszystkich nutek, ale np z lekkim opoznieniem)
-// są to typy wyników końcowych aplikowalne do prawie każdej gry rytmicznej
-
-if (process.env.POPULATE_DB) {
-    console.log("Populating db...");
-    songs_json.forEach(entry => {
-        let song = db_ops.insert_songs.get(entry.game, entry.name);
-        console.log("Created song:", song);
-
-        for (let i = 0; i < entry.lvlTab.length; i++) {
-            let diff = db_ops.insert_song_difficulty.get(song.song_id, entry.lvlDiffs[i], entry.lvlTab[i]);
-            console.log("Created diff:", diff);
-
-        }
-    });
-}
 
 export function getOrderedLevelTable() {
     const query = db_ops.select_orderedLevelTable.all()
@@ -106,7 +103,6 @@ export function getGamesTable() {
 }
 
 export function calcSongRating(game, lvl) {
-    // TODO: naprawic to zeby to nie bylo takie nieefektywne
     const maxLevel = db_ops.get_game_min_max_diff.get(game)['max'];
 
     if (maxLevel === undefined) {
@@ -275,7 +271,7 @@ export function getSongDetailsWithDifficulties(songKey) {
     const songEntry = db_ops.select_song_by_key.get(songKey);
 
     if (!songEntry) {
-        return null; // Song not found
+        return null;
     }
 
     const difficulties = db_ops.select_difficulties_by_song_id.all(songEntry.song_id);
@@ -311,6 +307,30 @@ export function insertDifficulties(song_id, difficulties) {
     }
 }
 
+export function updateSong(song_id, game, key, name, jacket) {
+    db_ops.update_song.run(game, key, name, jacket, song_id);
+}
+
+export function updateDifficulties(song_id, difficulties) {
+    db.exec('BEGIN');
+    try {
+        db_ops.delete_difficulties_by_song_id.run(song_id);
+        for (const diff of difficulties) {
+            db_ops.insert_song_difficulty.run(song_id, diff.name, diff.level);
+        }
+        db.exec('COMMIT');
+    } catch (error) {
+        console.error("Failed to update difficulties, rolling back:", error);
+        db.exec('ROLLBACK');
+        throw error;
+    }
+}
+
+export function deleteSong(songKey) {
+    db_ops.delete_song_by_key.run(songKey);
+}
+
+
 export function validateDifficulties(difficulties) {
     const errors = [];
 
@@ -345,6 +365,22 @@ export function getAllSongs() {
     return db_ops.select_all_songs.all();
 }
 
+export function insertGameWithId(game_id, name, name_short) {
+    db_ops.insert_games_with_id.run(game_id, name, name_short);
+}
+
+export function insertSongWithId(song_id, game, key, name, jacket) {
+    db_ops.insert_songs_with_id.run(song_id, game, key, name, jacket);
+}
+
+export function insertDifficultyWithId(sd_id, song_id, difficulty, level) {
+    db_ops.insert_song_difficulty_with_id.run(sd_id, song_id, difficulty, level);
+}
+
+export function insertScoreWithId(score_id, sd_id, type, user_id) {
+    db_ops.insert_scores_with_id.run(score_id, sd_id, type, user_id);
+}
+
 export default {
     getOrderedLevelTable,
     getAPs,
@@ -362,4 +398,7 @@ export default {
     insertDifficulties,
     validateDifficulties,
     getAllSongs,
+    updateSong,
+    updateDifficulties,
+    deleteSong,
 }

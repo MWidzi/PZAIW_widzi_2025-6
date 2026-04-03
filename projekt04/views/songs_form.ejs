@@ -1,4 +1,4 @@
-<form method="POST" action="/songs/song_new" id="new_song_form">
+<form method="POST" action="<%= formAction %>" id="song_form">
     <table id="new_song_table">
         <tr>
             <td><label for="name">Song name: </label></td>
@@ -31,8 +31,6 @@
     </table>
     <br>
     
-    <% // sekcja zwiazana z dynamicznym wyswietlaniem pól do wpisywania poziomów wygenerowana przez llm %>
-    
     <h2>Difficulties</h2>
     <div id="difficulties_container">
         <% if (locals.difficulties && difficulties.length > 0) { %>
@@ -59,7 +57,7 @@
     <button type="button" id="add_difficulty_button">Add Difficulty</button>
     <br>
     <br>
-    <input type="submit" value="Add song"><br>
+    <input type="submit" value="<%= submitButtonText %>"><br>
 </form>
 
 <script>
@@ -104,10 +102,5 @@
                 updateDifficultyIndices();
             }
         });
-
-        // Ensure there's at least one difficulty entry when loaded
-        if (difficultiesContainer.children.length === 0) {
-            addDifficultyButton.click();
-        }
     });
 </script>

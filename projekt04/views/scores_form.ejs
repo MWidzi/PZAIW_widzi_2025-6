@@ -1,4 +1,4 @@
-<form method="POST" action="/saveRating">
+<form method="POST" action="<% if (user.role == "admin" && targetUser != null) { %> /saveRating/<%= targetUser %> <% } else { %> /saveRating <% } %>">
     <input type="submit" value="Update rating">
     <table>
         <thead>

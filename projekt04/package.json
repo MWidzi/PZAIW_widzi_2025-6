@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch --env-file .env ./index.js",
-    "populate_db": "node utils/populate_db.js",
+    "populate_db": "POPULATE_DB=true npm run dev",
     "generate_env": "./utils/generate_env.sh > .env",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

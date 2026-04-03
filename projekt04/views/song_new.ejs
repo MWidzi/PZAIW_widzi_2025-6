@@ -1,21 +1,22 @@
 <%- include("header.ejs") %>
 
 <main>
-  <nav>
-    <a href="/diffs">Go back to songs list</a>
-  </nav>
-  <h1><%= title %></h1>
-  <div>
-    <h3>Nowa Piosenka</h3>
-    <% if (locals.errors != null) {%>
-    <ul id="errors">
-      <% errors.forEach(function(error){ %>
-      <li><%= error %></li>
-      <% }) %>
-    </ul>
-    <% } %>
-    <%- include("songs_form.ejs") %>
-  </div>
+    <nav>
+        <a href="/diffs">Go back to songs list</a>
+    </nav>
+    <h1><%= title %></h1>
+    <div>
+        <h3>Nowa Piosenka</h3>
+        <% if (locals.errors != null) {%>
+        <ul id="errors">
+            <% errors.forEach(function(error){ %>
+            <li><%= error %></li>
+            <% }) %>
+        </ul>
+        <% } %>
+
+        <%- include("songs_form.ejs") %>
+    </div>
 </main>
 
 <%- include("footer.ejs") %>

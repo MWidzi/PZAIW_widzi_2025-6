@@ -1,0 +1,28 @@
+<%- include("header.ejs") %>
+
+<main>
+    <h1><%= title %></h1>
+
+    <% if (locals.errors && errors.length > 0) { %>
+        <div class="errors">
+            <ul>
+                <% errors.forEach(error => { %>
+                    <li><%= error %></li>
+                <% }) %>
+            </ul>
+        </div>
+    <% } %>
+
+    <%- include("songs_form.ejs", {
+        formAction: `/songs/edit/${song.key}`,
+        submitButtonText: "Update Song",
+        song: song,
+        name: name,
+        jacket: jacket,
+        game: game,
+        difficulties: difficulties,
+        games: games
+    }) %>
+</main>
+
+<%- include("footer.ejs") %>

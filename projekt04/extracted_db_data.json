@@ -1,0 +1,431 @@
+{
+    "songs": [
+        {
+            "song_id": 1,
+            "game": 1,
+            "key": "pjsk-tell-your-world",
+            "name": "Tell Your World",
+            "jacket": "https://static.wikia.nocookie.net/projectsekai/images/e/e5/Tell_Your_World_Game_Cover.png/revision/latest?cb=20201019151335"
+        },
+        {
+            "song_id": 2,
+            "game": 1,
+            "key": "pjsk-drop-pop-candy",
+            "name": "drop pop candy",
+            "jacket": "https://static.wikia.nocookie.net/projectsekai/images/e/ef/Drop_pop_candy_Game_Cover.png/revision/latest?cb=20210129123849"
+        },
+        {
+            "song_id": 3,
+            "game": 2,
+            "key": "wds-i-wanna",
+            "name": "I Wanna",
+            "jacket": "https://static.wikia.nocookie.net/world-dai-star/images/3/33/I_Wanna_Game_Cover.png/revision/latest?cb=20240823075142"
+        },
+        {
+            "song_id": 4,
+            "game": 1,
+            "key": "pjsk-next-nest",
+            "name": "NEXT NEST",
+            "jacket": "https://static.wikia.nocookie.net/projectsekai/images/4/45/Next_Nest_Game_Cover.png/revision/latest?cb=20201019150432"
+        },
+        {
+            "song_id": 5,
+            "game": 1,
+            "key": "pjsk-hatsune-creation-myth",
+            "name": "Hatsune Creation Myth",
+            "jacket": "https://static.wikia.nocookie.net/projectsekai/images/e/ee/Hatsune_Tenchikaibyaku_Shinwa_Game_Cover.png/revision/latest?cb=20240717154456"
+        },
+        {
+            "song_id": 6,
+            "game": 1,
+            "key": "pjsk-the-end-of-hatsune-miku",
+            "name": "THE END OF HATSUNE MIKU",
+            "jacket": "https://static.wikia.nocookie.net/projectsekai/images/c/c7/Hatsune_Miku_no_Shoushitsu_Game_Cover.png/revision/latest?cb=20201111153637"
+        },
+        {
+            "song_id": 7,
+            "game": 2,
+            "key": "wds-dennouspectacle",
+            "name": " 電脳スペクタクル",
+            "jacket": "https://static.wikia.nocookie.net/world-dai-star/images/f/ff/Denno_Spectacle_Game_Cover.png/revision/latest?cb=20240808231002"
+        },
+        {
+            "song_id": 8,
+            "game": 2,
+            "key": "wds-shiriusunokinoyouni",
+            "name": " シリウスの輝きのように",
+            "jacket": "https://static.wikia.nocookie.net/world-dai-star/images/c/c8/Sirius_no_Kagayaki_no_you_ni_Game_Cover.png/revision/latest?cb=20230729211557"
+        },
+        {
+            "song_id": 9,
+            "game": 2,
+            "key": "wds-gurrwandrando",
+            "name": " グローリー・ワンダーランド",
+            "jacket": "https://static.wikia.nocookie.net/world-dai-star/images/3/32/Glory_Wonderland_Game_Cover.png/revision/latest?cb=20250408151851"
+        },
+        {
+            "song_id": 10,
+            "game": 2,
+            "key": "wds-ribereishon",
+            "name": " 情熱リベレイション",
+            "jacket": "https://static.wikia.nocookie.net/world-dai-star/images/9/95/Jonetsu_Liberation_Game_Cover.png/revision/latest?cb=20230804200759"
+        },
+        {
+            "song_id": 11,
+            "game": 1,
+            "key": "pjsk-shrimp-miku",
+            "name": "shrimp miku",
+            "jacket": "https://static.wikia.nocookie.net/projectsekai/images/4/4f/Shrimp_miku_Game_Cover.png/revision/latest?cb=20260401205630"
+        }
+    ],
+    "song_difficulty": [
+        {
+            "sd_id": 1,
+            "song_id": 1,
+            "difficulty": "easy",
+            "level": 5
+        },
+        {
+            "sd_id": 2,
+            "song_id": 1,
+            "difficulty": "normal",
+            "level": 10
+        },
+        {
+            "sd_id": 3,
+            "song_id": 1,
+            "difficulty": "hard",
+            "level": 16
+        },
+        {
+            "sd_id": 4,
+            "song_id": 1,
+            "difficulty": "expert",
+            "level": 22
+        },
+        {
+            "sd_id": 5,
+            "song_id": 1,
+            "difficulty": "master",
+            "level": 26
+        },
+        {
+            "sd_id": 6,
+            "song_id": 1,
+            "difficulty": "append",
+            "level": 25
+        },
+        {
+            "sd_id": 7,
+            "song_id": 2,
+            "difficulty": "easy",
+            "level": 6
+        },
+        {
+            "sd_id": 8,
+            "song_id": 2,
+            "difficulty": "normal",
+            "level": 12
+        },
+        {
+            "sd_id": 9,
+            "song_id": 2,
+            "difficulty": "hard",
+            "level": 17
+        },
+        {
+            "sd_id": 10,
+            "song_id": 2,
+            "difficulty": "expert",
+            "level": 25
+        },
+        {
+            "sd_id": 11,
+            "song_id": 2,
+            "difficulty": "master",
+            "level": 29
+        },
+        {
+            "sd_id": 12,
+            "song_id": 3,
+            "difficulty": "normal",
+            "level": 13
+        },
+        {
+            "sd_id": 13,
+            "song_id": 3,
+            "difficulty": "hard",
+            "level": 19
+        },
+        {
+            "sd_id": 14,
+            "song_id": 3,
+            "difficulty": "extra",
+            "level": 27
+        },
+        {
+            "sd_id": 15,
+            "song_id": 3,
+            "difficulty": "stella",
+            "level": 30
+        },
+        {
+            "sd_id": 16,
+            "song_id": 3,
+            "difficulty": "olivier",
+            "level": 40
+        },
+        {
+            "sd_id": 17,
+            "song_id": 4,
+            "difficulty": "master",
+            "level": 30
+        },
+        {
+            "sd_id": 18,
+            "song_id": 4,
+            "difficulty": "expert",
+            "level": 27
+        },
+        {
+            "sd_id": 19,
+            "song_id": 4,
+            "difficulty": "hard",
+            "level": 18
+        },
+        {
+            "sd_id": 20,
+            "song_id": 4,
+            "difficulty": "normal",
+            "level": 13
+        },
+        {
+            "sd_id": 21,
+            "song_id": 4,
+            "difficulty": "easy",
+            "level": 6
+        },
+        {
+            "sd_id": 22,
+            "song_id": 5,
+            "difficulty": "master",
+            "level": 33
+        },
+        {
+            "sd_id": 23,
+            "song_id": 5,
+            "difficulty": "expert",
+            "level": 28
+        },
+        {
+            "sd_id": 24,
+            "song_id": 5,
+            "difficulty": "hard",
+            "level": 20
+        },
+        {
+            "sd_id": 25,
+            "song_id": 5,
+            "difficulty": "normal",
+            "level": 14
+        },
+        {
+            "sd_id": 26,
+            "song_id": 5,
+            "difficulty": "easy",
+            "level": 9
+        },
+        {
+            "sd_id": 27,
+            "song_id": 6,
+            "difficulty": "master",
+            "level": 35
+        },
+        {
+            "sd_id": 28,
+            "song_id": 6,
+            "difficulty": "expert",
+            "level": 30
+        },
+        {
+            "sd_id": 29,
+            "song_id": 6,
+            "difficulty": "hard",
+            "level": 22
+        },
+        {
+            "sd_id": 30,
+            "song_id": 6,
+            "difficulty": "normal",
+            "level": 15
+        },
+        {
+            "sd_id": 31,
+            "song_id": 6,
+            "difficulty": "easy",
+            "level": 9
+        },
+        {
+            "sd_id": 32,
+            "song_id": 7,
+            "difficulty": "OLIVIER",
+            "level": 39
+        },
+        {
+            "sd_id": 33,
+            "song_id": 7,
+            "difficulty": "stella",
+            "level": 30
+        },
+        {
+            "sd_id": 34,
+            "song_id": 7,
+            "difficulty": "extra",
+            "level": 26
+        },
+        {
+            "sd_id": 35,
+            "song_id": 7,
+            "difficulty": "hard",
+            "level": 18
+        },
+        {
+            "sd_id": 36,
+            "song_id": 7,
+            "difficulty": "normal",
+            "level": 12
+        },
+        {
+            "sd_id": 37,
+            "song_id": 8,
+            "difficulty": "OLIVIER",
+            "level": 36
+        },
+        {
+            "sd_id": 38,
+            "song_id": 8,
+            "difficulty": "stella",
+            "level": 28
+        },
+        {
+            "sd_id": 39,
+            "song_id": 8,
+            "difficulty": "extra",
+            "level": 25
+        },
+        {
+            "sd_id": 40,
+            "song_id": 8,
+            "difficulty": "hard",
+            "level": 18
+        },
+        {
+            "sd_id": 41,
+            "song_id": 8,
+            "difficulty": "normal",
+            "level": 11
+        },
+        {
+            "sd_id": 42,
+            "song_id": 9,
+            "difficulty": "OLIVIER",
+            "level": 40
+        },
+        {
+            "sd_id": 43,
+            "song_id": 9,
+            "difficulty": "stella",
+            "level": 31
+        },
+        {
+            "sd_id": 44,
+            "song_id": 9,
+            "difficulty": "extra",
+            "level": 27
+        },
+        {
+            "sd_id": 45,
+            "song_id": 9,
+            "difficulty": "hard",
+            "level": 19
+        },
+        {
+            "sd_id": 46,
+            "song_id": 9,
+            "difficulty": "normal",
+            "level": 13
+        },
+        {
+            "sd_id": 47,
+            "song_id": 10,
+            "difficulty": "OLIVIER",
+            "level": 36
+        },
+        {
+            "sd_id": 48,
+            "song_id": 10,
+            "difficulty": "stella",
+            "level": 27
+        },
+        {
+            "sd_id": 49,
+            "song_id": 10,
+            "difficulty": "extra",
+            "level": 24
+        },
+        {
+            "sd_id": 50,
+            "song_id": 10,
+            "difficulty": "hard",
+            "level": 16
+        },
+        {
+            "sd_id": 51,
+            "song_id": 10,
+            "difficulty": "normal",
+            "level": 10
+        },
+        {
+            "sd_id": 52,
+            "song_id": 11,
+            "difficulty": "master",
+            "level": 28
+        },
+        {
+            "sd_id": 53,
+            "song_id": 11,
+            "difficulty": "expert",
+            "level": 23
+        },
+        {
+            "sd_id": 54,
+            "song_id": 11,
+            "difficulty": "hard",
+            "level": 17
+        },
+        {
+            "sd_id": 55,
+            "song_id": 11,
+            "difficulty": "normal",
+            "level": 12
+        },
+        {
+            "sd_id": 56,
+            "song_id": 11,
+            "difficulty": "easy",
+            "level": 6
+        }
+    ],
+    "games": [
+        {
+            "game_id": 1,
+            "name": "Project Sekai",
+            "name_short": "pjsk"
+        },
+        {
+            "game_id": 2,
+            "name": "World Dai Star",
+            "name_short": "wds"
+        }
+    ]
+}

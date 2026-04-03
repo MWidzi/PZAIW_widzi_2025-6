@@ -17,21 +17,33 @@ export function themeToggle(req, res) {
     res.cookie(THEME_COOKIE, theme);
 
     var next = req.query.next || "/";
-    res.redirect(next);
+    if (next.startsWith('/') && !next.startsWith('//')) {
+        res.redirect(next);
+    } else {
+        res.redirect('/');
+    }
 }
 
 export function acceptCookies(req, res) {
     res.cookie(CONSENT_COOKIE, true, { maxAge: ONE_MONTH, secure: true });
 
     var next = req.query.next || "/";
-    res.redirect(next);
+    if (next.startsWith('/') && !next.startsWith('//')) {
+        res.redirect(next);
+    } else {
+        res.redirect('/');
+    }
 }
 
 export function declineCookies(req, res) {
     res.cookie(CONSENT_COOKIE, false, { maxAge: ONE_MONTH, secure: true });
 
     var next = req.query.next || "/";
-    res.redirect(next);
+    if (next.startsWith('/') && !next.startsWith('//')) {
+        res.redirect(next);
+    } else {
+        res.redirect('/');
+    }
 }
 
 export function manageCookies(req, res) {
