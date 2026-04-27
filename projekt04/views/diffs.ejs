@@ -1,9 +1,11 @@
 <%- include("header.ejs") %>
 
-<% if (user) { %>
-    <%- include("scores_form.ejs") %>
-<% } else { %>
-    <%- include("not_logged_in_message.ejs") %>
-<% } %>
+    <!-- TODO: make the diffs be able to be grouped in a different way like by song name -->
 
-<%- include("footer.ejs") %>
+    <% if (user) { %>
+        <%- include("scores_form.ejs") %>
+            <% } else { %>
+                <%- include("not_logged_in_message.ejs") %>
+                    <% } %>
+
+                        <%- include("footer.ejs") %>

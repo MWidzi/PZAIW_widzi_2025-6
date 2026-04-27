@@ -15,7 +15,10 @@
         </ul>
         <% } %>
 
-        <%- include("songs_form.ejs") %>
+        <%- include("songs_form.ejs", { 
+            formAction: "/songs/song_new",
+            submitButtonText: "Add song"
+        }) %>
     </div>
 </main>
 
